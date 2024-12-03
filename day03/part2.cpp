@@ -6,6 +6,7 @@
 std::string input;
 int pos = 0;
 bool finished = false;
+bool enabled = true;
 int total_sum = 0;
 std::string first_number = "";
 std::string second_number = "";
@@ -14,6 +15,17 @@ bool check(char to_check);
 bool checknum(std::string* number);
 
 bool parse_input();
+
+bool parse_d();
+bool parse_o();
+bool parse_doleftp();
+bool parse_dorightp();
+bool parse_n();
+bool parse_apostrophe();
+bool parse_t();
+bool parse_dontleftp();
+bool parse_dontrightp();
+
 bool parse_m();
 bool parse_u();
 bool parse_l();
@@ -54,9 +66,98 @@ bool parse_input() {
     return false;
   }
 
-  if (check('m')) {
-    return parse_m();
+  if (enabled) {
+    if (check('m')) {
+      return parse_m();
+    }
   }
+
+  if (check('d')) {
+    return parse_d();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_d() {
+  if (check('o')) {
+    return parse_o();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_o() {
+  if (enabled) {
+    if (check('n')) {
+      return parse_n();
+    }
+  } else {
+    if (check('(')) {
+      return parse_doleftp();
+    }
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_doleftp() {
+  if (check(')')) {
+    return parse_dorightp();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_dorightp() {
+  enabled = true;
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_n() {
+  if (check('\'')) {
+    return parse_apostrophe();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_apostrophe() {
+  if (check('t')) {
+    return parse_t();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_t() {
+  if (check('(')) {
+    return parse_dontleftp();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_dontleftp() {
+  if (check(')')) {
+    return parse_dontrightp();
+  }
+
+  pos++;
+  return parse_input();
+}
+
+bool parse_dontrightp() {
+  enabled = false;
 
   pos++;
   return parse_input();
@@ -100,7 +201,6 @@ bool parse_leftp() {
 }
 
 bool parse_fstnum() {
-
   if (checknum(&first_number)) {
     return parse_fstnum();
   }
